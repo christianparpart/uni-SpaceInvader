@@ -13,7 +13,7 @@ int main(int argc, char* argv[])
 {
     using namespace sgfx;
 
-    game g();
+    auto g = game{};
 
     g.spawn<scrolling_bg>("img/bg.rle");
     g.spawn<player>("img/ship", player::key_config{sgfx::key::left, sgfx::key::right, sgfx::key::up,
