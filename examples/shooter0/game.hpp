@@ -39,7 +39,7 @@ class game_object {
   public:
     enum class [[nodiscard]] status{dead, alive};
 
-    void draw(sgfx::canvas_view) const {};
+    virtual void draw(sgfx::canvas_view) const = 0; // {};
     virtual status update(game_proxy, std::chrono::milliseconds delta) = 0;
 
     game_object() = default;

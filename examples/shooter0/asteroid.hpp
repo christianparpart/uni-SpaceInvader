@@ -16,7 +16,7 @@ class asteroid final : public game_object, autoregister_collider {
     asteroid(game_proxy proxy, const std::string& filename, sgfx::point pos);
 
     game_object::status update(game_proxy proxy, std::chrono::milliseconds delta) override;
-    void draw(sgfx::canvas_view target) const;
+    void draw(sgfx::canvas_view target) const override;
 
     sgfx::rectangle bounds() const override
     {

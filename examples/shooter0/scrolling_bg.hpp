@@ -21,7 +21,7 @@ class scrolling_bg final : public game_object {
         return game_object::status::alive;
     }
 
-    void draw(sgfx::canvas_view target) const
+    void draw(sgfx::canvas_view target) const override
     {
         sgfx::draw(target, img_, pos_);
         sgfx::draw(target, img_, pos_ - sgfx::vec{0, img_.height()});

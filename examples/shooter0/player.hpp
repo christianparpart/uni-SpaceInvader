@@ -24,7 +24,7 @@ class player final : public game_object, autoregister_collider {
     explicit player(game_proxy proxy, const std::string& name, const key_config& keys);
 
     game_object::status update(game_proxy proxy, std::chrono::milliseconds delta) override;
-    void draw(sgfx::canvas_view target) const;
+    void draw(sgfx::canvas_view target) const override;
 
     sgfx::rectangle bounds() const override
     {
