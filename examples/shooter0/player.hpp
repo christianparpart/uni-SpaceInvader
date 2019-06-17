@@ -12,6 +12,7 @@
 #include <chrono>
 #include <memory>
 #include <string>
+#include <array>
 
 class player final : public game_object, autoregister_collider {
   public:
