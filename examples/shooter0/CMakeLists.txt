@@ -10,6 +10,10 @@ add_executable(shooter_example main.cpp asteroid.cpp bullet.cpp collision_manage
 set_target_properties(shooter_example PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
 target_link_libraries(shooter_example sgfx)
 
+if(CLANG_TIDY_EXE)
+	set_target_properties(shooter_example PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}")
+endif()
+
 # add_subdirectory(../../sgfx build)
 # target_link_libraries(shooter_example sgfx glfw GLEW::GLEW OpenGL::GL)
 

@@ -13,5 +13,9 @@ set_target_properties(sgfx PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
 target_include_directories(sgfx PUBLIC include)
 target_link_libraries(sgfx glfw GLEW::GLEW OpenGL::GL)
 
+if(CLANG_TIDY_EXE)
+	set_target_properties(sgfx PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}")
+endif()
+
 # install(TARGETS sgfx DESTINATION lib)
 # install(DIRECTORY include/sgfx DESTINATION include)
