@@ -34,7 +34,9 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 
 # i don't like this being enabled *globally*
-enable_cxx_compiler_flag_if_supported("-Wall")
+if(NOT MSVC)
+	enable_cxx_compiler_flag_if_supported("-Wall")
+endif()
 enable_cxx_compiler_flag_if_supported("-pedantic")
 enable_cxx_compiler_flag_if_supported("-Werror")
 
