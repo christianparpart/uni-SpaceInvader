@@ -25,6 +25,7 @@ defaults:
                 -DCMAKE_C_COMPILER=$CMAKE_C_COMPILER \
                 -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE
             make
+
 jobs:
 
   build_ubuntu1904_clang:
