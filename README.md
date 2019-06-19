@@ -1,4 +1,12 @@
 
+# Submission checklist:
+- [ ] 2) shooter1: copy of shooter0 (as is right now)
+- [ ] 1) shooter0: then revert resource_manager in shooter0 ;-(
+- [ ] 2) reduce number of dynamically bound calls to 1 (visitor pattern?)
+- [ ] 2) add performance counters (ms per frame, ms per draw, ms per update)
+- [ ] 3) shooter2: SAT: implement sat_collide()
+- [ ] 3) shooter2: extend API as requested in the assignment ...
+- [ ] 4) Quadtree<T>....
 
 # TODO must-haves
 
