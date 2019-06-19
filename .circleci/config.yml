@@ -12,7 +12,7 @@ defaults:
         set -ex
         apt-get -q update
         apt-get -qy upgrade
-        apt-get -qy install cmake make g++ clang++-8 libglfw3-dev libglew-dev
+        apt-get -qy install cmake make g++ clang++-8 clang-tidy-8 libglfw3-dev libglew-dev
 
   - run_build: &run_build
           name: Build
