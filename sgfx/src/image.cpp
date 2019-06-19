@@ -77,6 +77,8 @@ void sgfx::save_ppm(canvas_view img, const std::string& filename)
 
 rle_image sgfx::load_rle(const std::string& filename)
 {
+    printf("load_rle: %s\n", filename.c_str());
+
     std::ifstream in{filename, std::ios_base::binary};
     in.exceptions(std::ios_base::failbit | std::ios_base::badbit);
 

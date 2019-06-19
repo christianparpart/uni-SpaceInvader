@@ -27,7 +27,7 @@ class spawn_point final : public game_object {
     {
         while (time_remaining_ <= delta)
         {
-            const auto pos = sgfx::point{area_.top_left.x + random_uniform_int(area_.size.w),
+            auto const pos = sgfx::point{area_.top_left.x + random_uniform_int(area_.size.w),
                                          area_.top_left.y + random_uniform_int(area_.size.h)};
             spawn_fun_(proxy, pos);
             delta -= time_remaining_;
@@ -53,7 +53,7 @@ spawn_point(sgfx::rectangle, spawn_function_type, std::chrono::milliseconds)
 template <typename spawn_function_type>
 auto make_spawn_point(sgfx::rectangle area, spawn_function_type spawn_fun, std::chrono::milliseconds delay)
 {
-    return new spawn_point<spawn_function_type>(area, spawn_fun, delay);
+    return std::make_unique<spawn_point<spawn_function_type>>(area, spawn_fun, delay);
 }
 
 #endif

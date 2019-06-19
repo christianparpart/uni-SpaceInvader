@@ -12,7 +12,7 @@
 
 class scrolling_bg final : public game_object {
   public:
-    scrolling_bg(game_proxy proxy, const std::string& filename) : img_{sgfx::load_rle(filename)} {}
+    scrolling_bg(game_proxy proxy, sgfx::rle_image const& image) : img_{image} {}
 
     game_object::status update(game_proxy proxy, std::chrono::milliseconds delta) override
     {
@@ -28,9 +28,9 @@ class scrolling_bg final : public game_object {
     }
 
   private:
-    sgfx::rle_image img_;
+    sgfx::rle_image const& img_;
     sgfx::point pos_{0, 0};
-    int scroll_speed_ = 2;
+    int const scroll_speed_{2};
 };
 
 #endif

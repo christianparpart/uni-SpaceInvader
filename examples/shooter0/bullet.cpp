@@ -1,7 +1,7 @@
 #include "bullet.hpp"
 
-bullet::bullet(game_proxy proxy, const std::string& img, sgfx::point pos)
-    : autoregister_collider{proxy}, img_{sgfx::load_rle(img)}, pos_{pos}
+bullet::bullet(game_proxy proxy, sgfx::rle_image const& img, sgfx::point pos)
+    : autoregister_collider{proxy}, img_{img}, pos_{pos}
 {
 }
 

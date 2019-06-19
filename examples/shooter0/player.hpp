@@ -21,22 +21,23 @@ class player final : public game_object, autoregister_collider {
         sgfx::key_id shoot;
     };
 
-    explicit player(game_proxy proxy, const std::string& name, const key_config& keys);
+    player(game_proxy proxy, resource_manager& rm, const std::string& name, const key_config& keys);
 
     game_object::status update(game_proxy proxy, std::chrono::milliseconds delta) override;
     void draw(sgfx::canvas_view target) const override;
 
     sgfx::rectangle bounds() const override
     {
-        const auto& current_img = imgs_[static_cast<int>(current_status_)];
-        const auto center_offset = sgfx::vec{current_img.width(), current_img.height()} / 2;
+        auto const& current_img = *imgs_[static_cast<int>(current_status_)];
+        auto const center_offset = sgfx::vec{current_img.width(), current_img.height()} / 2;
         return {pos_ - center_offset, {current_img.width(), current_img.height()}};
     }
 
     void hit() override { --lifes; }
 
   private:
-    std::array<sgfx::rle_image, 3> imgs_;
+    resource_manager& resource_manager_;
+    std::array<sgfx::rle_image const*, 3> imgs_;
     key_config keys_;
 
     enum class state { normal, flying_left, flying_right };

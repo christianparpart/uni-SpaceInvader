@@ -25,7 +25,9 @@ class rle_image {
 
   private:
     rle_image() = default;
-    std::uint16_t width_, height_;
+
+    std::uint16_t width_{};
+    std::uint16_t height_{};
     std::vector<std::uint16_t> line_runs;
     struct run {
         std::uint8_t num;

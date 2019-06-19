@@ -1,4 +1,16 @@
 #include "game.hpp"
+#include <memory>
+#include <utility>
+
+sgfx::rle_image const& resource_manager::rle(std::string const& path)
+{
+    auto i = rle_images_.find(path);
+    if (i != rle_images_.end())
+        return i->second;
+
+    rle_images_.emplace(make_pair(path, sgfx::load_rle(path)));
+    return rle(path);
+}
 
 game::game() : wnd_{640, 480, "Space!"}
 {
@@ -9,7 +21,7 @@ void game::run()
     while (wnd_.handle_events() && !wnd_.should_close())
     {
         using namespace std::chrono;
-        auto now = high_resolution_clock::now();
+        auto const now = high_resolution_clock::now();
         leftover_time += duration_cast<milliseconds>(now - last_time);
         last_time = now;
 
@@ -19,7 +31,7 @@ void game::run()
 
             for (std::size_t i = 0; i < objs_.size(); ++i)
             {
-                const auto obj_state = objs_[i]->update(game_proxy{this}, step_time);
+                auto const obj_state = objs_[i]->update(game_proxy{this}, step_time);
                 if (obj_state == game_object::status::dead)
                 {
                     std::swap(objs_[i], objs_.back());
@@ -38,7 +50,7 @@ void game::run()
     }
 }
 
-void game::spawn(game_object* new_obj)
+void game::spawn(std::unique_ptr<game_object> new_obj)
 {
     objs_.push_back(std::move(new_obj));
 }

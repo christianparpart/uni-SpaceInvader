@@ -10,12 +10,22 @@
 #include <chrono>
 #include <memory>
 #include <mutex>
+#include <string>
+#include <string_view>
 #include <thread>
 #include <unordered_map>
 #include <vector>
 
 class game;
 class game_object;
+
+class resource_manager {
+  public:
+    sgfx::rle_image const& rle(std::string const& path);
+
+  private:
+    std::unordered_map<std::string, sgfx::rle_image> rle_images_;
+};
 
 class game_proxy {
   public:
@@ -39,9 +49,10 @@ class game_object {
   public:
     enum class [[nodiscard]] status{dead, alive};
 
-    virtual void draw(sgfx::canvas_view) const = 0; // {};
+    virtual void draw(sgfx::canvas_view) const = 0;
     virtual status update(game_proxy, std::chrono::milliseconds delta) = 0;
 
+    virtual ~game_object() = default;
     game_object() = default;
     game_object(const game_object&) = delete;
     game_object& operator=(const game_object&) = delete;
@@ -56,21 +67,23 @@ class game {
     template <typename T, typename... arg_types>
     void spawn(arg_types&&... args)
     {
-        spawn(new T(game_proxy{this}, std::forward<arg_types>(args)...));
+        spawn(std::make_unique<T>(game_proxy{this}, std::forward<arg_types>(args)...));
     }
 
-    void spawn(game_object*);
+    void spawn(std::unique_ptr<game_object>);
 
     void run();
 
   private:
+    // NB: The game should not own the drawing target, for recomposability.
     sgfx::window wnd_;
 
-    std::vector<game_object*> objs_;
     collision_manager collision_mgr_;
+    std::vector<std::unique_ptr<game_object>> objs_;
 
     std::chrono::high_resolution_clock::time_point last_time = std::chrono::high_resolution_clock::now();
-    std::chrono::milliseconds leftover_time{0}, step_time = std::chrono::milliseconds{1000} / 120;
+    std::chrono::milliseconds leftover_time{0};
+    std::chrono::milliseconds const step_time = std::chrono::milliseconds{1000} / 120;
 
     friend class game_proxy;
 };

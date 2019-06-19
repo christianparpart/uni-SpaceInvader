@@ -13,7 +13,7 @@
 
 class bullet final : public game_object, autoregister_collider {
   public:
-    bullet(game_proxy proxy, const std::string& img, sgfx::point pos);
+    bullet(game_proxy proxy, sgfx::rle_image const& img, sgfx::point pos);
 
     game_object::status update(game_proxy proxy, std::chrono::milliseconds delta) override;
     void draw(sgfx::canvas_view target) const override;
