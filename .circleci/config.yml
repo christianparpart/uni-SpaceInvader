@@ -1,95 +1,61 @@
-# vim:ts=2:sw=2:et
-# --------------------------------------------------------------------------
-#   Prefixes used in order to keep CircleCI workflow overview more readable:
-#     - b: build
-#     - t: test
-#     - ubu: ubuntu
-#     - ems: Emscripten
 version: 2
 
 defaults:
-
-
-  - run_build: &run_build
-      name: Build
-      command: |
-        set -ex
-        if [ "$CIRCLE_BRANCH" = release -o -n "$CIRCLE_TAG" ]; then echo -n > prerelease.txt; else date -u +"nightly.%Y.%-m.%-d" > prerelease.txt; fi
-        echo -n "$CIRCLE_SHA1" > commit_hash.txt
-        mkdir -p build
-        cd build
-        [ -n "$COVERAGE" -a "$CIRCLE_BRANCH" != release -a -z "$CIRCLE_TAG" ] && CMAKE_OPTIONS="$CMAKE_OPTIONS -DCOVERAGE=ON"
-        cmake .. -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE:-Release} $CMAKE_OPTIONS -G "Unix Makefiles"
-        make -j4
-
-  # --------------------------------------------------------------------------
-  # Tests Templates
-
-  - run_soltest: &run_soltest
-      name: soltest
-      command: ./.circleci/soltest.sh
-
-  - test_steps: &test_steps
-      - checkout
-      - attach_workspace:
-          at: build
-      - run: *run_soltest
-      - store_test_results: *store_test_results
-      - store_artifacts: *artifacts_test_results
-
-  - test_ubuntu1904: &test_ubuntu1904
-      docker:
-        - image: ubuntu:19.04
-      steps: *test_steps
-
-  # --------------------------------------------------------------------------
-  # Workflow Templates
-
   - workflow_trigger_on_tags: &workflow_trigger_on_tags
       filters:
         tags:
           only: /.*/
 
-  - workflow_ubuntu1904: &workflow_ubuntu1904
-      <<: *workflow_trigger_on_tags
-      requires:
-        - build_ubuntu1904
+  - run_install_deps: &run_install_deps
+      name: Install dependencies
+      command: |
+        set -ex
+        apt-get -q update
+        apt-get -qy upgrade
+        apt-get -qy install cmake make g++ clang++-8 libglfw3-dev libglew-dev
 
-# -----------------------------------------------------------------------------------------------
-jobs:
-
-  build_ubuntu1904:
-    docker:
-      - image: ubuntu:19.04
-    steps:
-      - checkout
-      - run:
-          name: Prepare
-          command: |
-            set -ex
-            apt-get update
-            apt-get -qqy upgrade
-            apt-get -qqy cmake make g++ clang++-8
-      - run:
+  - run_build: &run_build
           name: Build
           command: |
             set -ex
             mkdir -p build
             cd build
-            cmake .. -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE:-Release} $CMAKE_OPTIONS -G "Unix Makefiles"
-            make -j4
-      - run:
-          name: Test
-          command: |
-            true # TODO
+            cmake .. -G "Unix Makefiles" \
+                -DCMAKE_CXX_COMPILER=$CMAKE_CXX_COMPILER \
+                -DCMAKE_C_COMPILER=$CMAKE_C_COMPILER \
+                -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE
+            make
+jobs:
 
+  build_ubuntu1904_clang:
+    docker:
+      - image: ubuntu:19.04
+    environment:
+      CMAKE_CXX_COMPILER: "clang++-8"
+      CMAKE_C_COMPILER: "clang-8"
+      CMAKE_BUILD_TYPE: "Release"
+    steps:
+      - checkout
+      - run: *run_install_deps
+      - run: *run_build
+
+  build_ubuntu1904_gcc:
+    docker:
+      - image: ubuntu:19.04
+    environment:
+      CMAKE_CXX_COMPILER: "g++-8"
+      CMAKE_C_COMPILER: "gcc-8"
+      CMAKE_BUILD_TYPE: "Release"
+    steps:
+      - checkout
+      - run: *run_install_deps
+      - run: *run_build
 
 workflows:
   version: 2
 
   main:
     jobs:
-      # Ubuntu 18.10 build and tests
-      - build_ubuntu1904: *workflow_trigger_on_tags
-      - test_ubuntu: *workflow_ubuntu1904
+      - build_ubuntu1904_clang: *workflow_trigger_on_tags
+      - build_ubuntu1904_gcc: *workflow_trigger_on_tags
 
