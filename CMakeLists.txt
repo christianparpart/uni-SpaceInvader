@@ -16,7 +16,7 @@ function(enable_cxx_compiler_flag_if_supported flag)
 	endif()
 endfunction()
 
-option(ENABLE_TIDY "Enable clang-tidy [default: OFF]" ON)
+option(ENABLE_TIDY "Enable clang-tidy [default: OFF]" OFF)
 if(ENABLE_TIDY)
     find_program(CLANG_TIDY_EXE
         NAMES clang-tidy-8 clang-tidy-7 clang-tidy-6.0 clang-tidy
@@ -28,10 +28,6 @@ if(ENABLE_TIDY)
         set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}")
     endif()
 endif()
-
-
-# bad. should be done per target.
-set(CMAKE_CXX_STANDARD 17)
 
 # i don't like this being enabled *globally*
 if(NOT MSVC)

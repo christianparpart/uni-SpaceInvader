@@ -4,8 +4,6 @@ include(CheckCXXCompilerFlag)
 
 project(snake_example)
 
-set(CMAKE_CXX_STANDARD 17)
-
 add_executable(shooter_example main.cpp asteroid.cpp bullet.cpp collision_manager.cpp game.cpp player.cpp)
 set_target_properties(shooter_example PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
 target_link_libraries(shooter_example sgfx)
