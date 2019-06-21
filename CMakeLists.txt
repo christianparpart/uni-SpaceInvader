@@ -16,7 +16,13 @@ function(enable_cxx_compiler_flag_if_supported flag)
 	endif()
 endfunction()
 
-option(ENABLE_TIDY "Enable clang-tidy [default: OFF]" OFF)
+if(MSVC)
+	set(TIDY_DEFAULT OFF)
+else()
+	set(TIDY_DEFAULT ON)
+endif()
+
+option(ENABLE_TIDY "Enable clang-tidy [default: OFF]" ${TIDY_DEFAULT})
 if(ENABLE_TIDY)
     find_program(CLANG_TIDY_EXE
         NAMES clang-tidy-8 clang-tidy-7 clang-tidy-6.0 clang-tidy
@@ -38,3 +44,4 @@ enable_cxx_compiler_flag_if_supported("-Werror")
 
 add_subdirectory(sgfx)
 add_subdirectory(examples/shooter0)
+add_subdirectory(examples/shooter1)
