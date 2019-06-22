@@ -19,14 +19,6 @@
 class game;
 class game_object;
 
-class resource_manager {
-  public:
-    sgfx::rle_image const& rle(std::string const& path);
-
-  private:
-    std::unordered_map<std::string, sgfx::rle_image> rle_images_;
-};
-
 class game_proxy {
   public:
     template <typename T, typename... arg_types>

@@ -13,7 +13,7 @@
 
 class asteroid final : public game_object, autoregister_collider {
   public:
-    asteroid(game_proxy proxy, sgfx::rle_image const& image, sgfx::point pos);
+    asteroid(game_proxy proxy, std::string const& image, sgfx::point pos);
 
     game_object::status update(game_proxy proxy, std::chrono::milliseconds delta) override;
     void draw(sgfx::canvas_view target) const override;
@@ -26,7 +26,7 @@ class asteroid final : public game_object, autoregister_collider {
     void hit() override { current_status_ = game_object::status::dead; }
 
   private:
-    sgfx::rle_image const& img_;
+    sgfx::rle_image img_;
     sgfx::point pos_;
     sgfx::vec vel_{1, 2};
 

@@ -2,16 +2,6 @@
 #include <memory>
 #include <utility>
 
-sgfx::rle_image const& resource_manager::rle(std::string const& path)
-{
-    auto i = rle_images_.find(path);
-    if (i != rle_images_.end())
-        return i->second;
-
-    rle_images_.emplace(make_pair(path, sgfx::load_rle(path)));
-    return rle(path);
-}
-
 game::game() : wnd_{640, 480, "Space!"}
 {
 }

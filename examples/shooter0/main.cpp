@@ -12,17 +12,15 @@
 int main(int argc, char* argv[])
 {
     using namespace sgfx;
-	using std::ref;
 
-	auto rm = resource_manager{};
     auto g = game{};
 
-    g.spawn<scrolling_bg>(rm.rle("img/bg.rle"));
-    g.spawn<player>(ref(rm), "img/ship", player::key_config{sgfx::key::left, sgfx::key::right, sgfx::key::up,
-														    sgfx::key::down, sgfx::key::space});
+    g.spawn<scrolling_bg>("img/bg.rle");
+    g.spawn<player>("img/ship", player::key_config{sgfx::key::left, sgfx::key::right, sgfx::key::up,
+                                                   sgfx::key::down, sgfx::key::space});
     g.spawn(make_spawn_point(
         {{0, 0}, {100, 100}},
-        [&](auto proxy, auto pos) { proxy.template spawn<asteroid>(rm.rle("img/asteroid.rle"), pos); },
+        [](auto proxy, auto pos) { proxy.template spawn<asteroid>("img/asteroid.rle", pos); },
         std::chrono::seconds{3}));
     g.run();
 

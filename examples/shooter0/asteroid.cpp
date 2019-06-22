@@ -1,7 +1,7 @@
 #include "asteroid.hpp"
 
-asteroid::asteroid(game_proxy proxy, sgfx::rle_image const& image, sgfx::point pos)
-    : autoregister_collider{proxy}, img_{image}, pos_{pos}
+asteroid::asteroid(game_proxy proxy, std::string const& image, sgfx::point pos)
+    : autoregister_collider{proxy}, img_{sgfx::load_rle(image)}, pos_{pos}
 {
 }
 

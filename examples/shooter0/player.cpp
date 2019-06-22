@@ -3,10 +3,10 @@
 
 #include <algorithm>
 
-player::player(game_proxy proxy, resource_manager& rm, const std::string& name, const key_config& keys)
-    : autoregister_collider{proxy}, resource_manager_{rm}, imgs_{&rm.rle(name + ".rle"),
-                                                                 &rm.rle(name + "_left.rle"),
-                                                                 &rm.rle(name + "_right.rle")},
+player::player(game_proxy proxy, const std::string& name, const key_config& keys)
+    : autoregister_collider{proxy}, imgs_{sgfx::load_rle(name + ".rle"),
+										  sgfx::load_rle(name + "_left.rle"),
+										  sgfx::load_rle(name + "_right.rle")},
       keys_{keys}, pos_{proxy.area().top_left + sgfx::vec{proxy.area().size.w / 2, proxy.area().size.h}}
 {
 }
@@ -32,14 +32,14 @@ game_object::status player::update(game_proxy proxy, std::chrono::milliseconds d
     if (proxy.is_pressed(keys_.shoot) && space_released)
     {
         space_released = false;
-        proxy.spawn<bullet>(resource_manager_.rle("img/missile.rle"), pos_ - sgfx::vec{0, 50});
+        proxy.spawn<bullet>("img/missile.rle", pos_ - sgfx::vec{0, 50});
     }
     else if (!proxy.is_pressed(keys_.shoot))
     {
         space_released = true;
     }
 
-    const auto& current_img = *imgs_[static_cast<int>(current_status_)];
+    const auto& current_img = imgs_[static_cast<int>(current_status_)];
     const auto center_offset = sgfx::vec{current_img.width(), current_img.height()} / 2;
     const auto area = proxy.area();
     pos_.x = std::clamp(pos_.x, area.top_left.x + center_offset.x,
@@ -52,7 +52,7 @@ game_object::status player::update(game_proxy proxy, std::chrono::milliseconds d
 
 void player::draw(sgfx::canvas_view target) const
 {
-    const auto& current_img = *imgs_[static_cast<int>(current_status_)];
+    const auto& current_img = imgs_[static_cast<int>(current_status_)];
     const auto center_offset = sgfx::vec{current_img.width(), current_img.height()} / 2;
     sgfx::draw(target, current_img, pos_ - center_offset, key_color);
 
