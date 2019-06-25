@@ -18,6 +18,7 @@
 
 class game;
 class game_object;
+class game_object_visitor;
 
 class resource_manager {
   public:
@@ -48,6 +49,8 @@ class game_proxy {
 class game_object {
   public:
     enum class [[nodiscard]] status{dead, alive};
+
+	virtual void accept(game_object_visitor& visitor) = 0;
 
     virtual void draw(sgfx::canvas_view) const = 0;
     virtual status update(game_proxy, std::chrono::milliseconds delta) = 0;

@@ -2,6 +2,7 @@
 #define SCROLLING_BG_H
 
 #include "game.hpp"
+#include "game_object_visitor.hpp"
 
 #include <sgfx/image.hpp>
 #include <sgfx/primitives.hpp>
@@ -13,6 +14,8 @@
 class scrolling_bg final : public game_object {
   public:
     scrolling_bg(game_proxy proxy, sgfx::rle_image const& image) : img_{image} {}
+
+	void accept(game_object_visitor& visitor) { visitor.visit(*this); }
 
     game_object::status update(game_proxy proxy, std::chrono::milliseconds delta) override
     {

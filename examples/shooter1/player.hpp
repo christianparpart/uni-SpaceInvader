@@ -23,6 +23,8 @@ class player final : public game_object, autoregister_collider {
 
     player(game_proxy proxy, resource_manager& rm, const std::string& name, const key_config& keys);
 
+	void accept(game_object_visitor&) override;
+
     game_object::status update(game_proxy proxy, std::chrono::milliseconds delta) override;
     void draw(sgfx::canvas_view target) const override;
 

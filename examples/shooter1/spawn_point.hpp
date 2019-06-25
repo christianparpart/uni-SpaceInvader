@@ -5,6 +5,7 @@
 
 #include <sgfx/primitives.hpp>
 
+#include <functional>
 #include <memory>
 #include <random>
 
@@ -15,13 +16,16 @@ inline int random_uniform_int(int max)
     return dist(random_gen);
 }
 
-template <typename spawn_function_type>
+using spawn_function_type = std::function<void(game_proxy, sgfx::point)>;
+
 class spawn_point final : public game_object {
   public:
     spawn_point(sgfx::rectangle area, spawn_function_type spawn_fun, std::chrono::milliseconds delay)
         : area_{area}, spawn_fun_{spawn_fun}, delay_{delay}, time_remaining_{delay}
     {
     }
+
+	void accept(game_object_visitor& visitor) { return visitor.visit(*this); }
 
     game_object::status update(game_proxy proxy, std::chrono::milliseconds delta) override
     {
@@ -46,14 +50,10 @@ class spawn_point final : public game_object {
     std::chrono::milliseconds delay_, time_remaining_;
 };
 
-template <typename spawn_function_type>
-spawn_point(sgfx::rectangle, spawn_function_type, std::chrono::milliseconds)
-    ->spawn_point<spawn_function_type>;
-
-template <typename spawn_function_type>
-auto make_spawn_point(sgfx::rectangle area, spawn_function_type spawn_fun, std::chrono::milliseconds delay)
+auto inline make_spawn_point(sgfx::rectangle area, spawn_function_type spawn_fun,
+                             std::chrono::milliseconds delay)
 {
-    return std::make_unique<spawn_point<spawn_function_type>>(area, spawn_fun, delay);
+    return std::make_unique<spawn_point>(area, spawn_fun, delay);
 }
 
 #endif
