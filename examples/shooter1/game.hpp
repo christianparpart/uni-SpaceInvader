@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include "collision_manager.hpp"
+#include "stats.hpp"
 
 #include <sgfx/image.hpp>
 #include <sgfx/primitives.hpp>
@@ -50,7 +51,7 @@ class game_object {
   public:
     enum class [[nodiscard]] status{dead, alive};
 
-	virtual void accept(game_object_visitor& visitor) = 0;
+    virtual void accept(game_object_visitor& visitor) = 0;
 
     virtual ~game_object() = default;
     game_object() = default;
@@ -72,7 +73,7 @@ class game {
 
     void spawn(std::unique_ptr<game_object>);
 
-    void run();
+    stats run();
 
   private:
     // NB: The game should not own the drawing target, for recomposability.

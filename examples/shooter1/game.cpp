@@ -1,8 +1,9 @@
 #include "game.hpp"
-#include "game_object_visitor.hpp"
+#include <algorithm>
 #include <memory>
 #include <utility>
-#include <algorithm>
+#include "game_object_visitor.hpp"
+#include "stats.hpp"
 
 sgfx::rle_image const& resource_manager::rle(std::string const& path)
 {
@@ -18,8 +19,10 @@ game::game() : wnd_{640, 480, "Space!"}
 {
 }
 
-void game::run()
+stats game::run()
 {
+    stats stats;
+
     while (wnd_.handle_events() && !wnd_.should_close())
     {
         using namespace std::chrono;
@@ -29,10 +32,14 @@ void game::run()
 
         while (leftover_time >= step_time)
         {
-            collision_mgr_.handle_collisions();
+            {
+                perf_timer timer{stats.collider};
+                collision_mgr_.handle_collisions();
+            }
 
             for (std::size_t i = 0; i < objs_.size(); ++i)
             {
+                perf_timer timer{stats.updates};
                 auto const obj_state = game_object_updater::update(game_proxy{this}, step_time, *objs_[i]);
 
                 if (obj_state == game_object::status::dead)
@@ -46,10 +53,20 @@ void game::run()
             leftover_time -= step_time;
         }
 
-		std::for_each(begin(objs_), end(objs_), [&](auto& obj) { game_object_drawer::draw(wnd_, *obj); });
+        std::for_each(begin(objs_), end(objs_), [&](auto& obj) {
+            perf_timer timer{stats.draws};
+            game_object_drawer::draw(wnd_, *obj);
+        });
 
-        wnd_.show();
+        {
+            perf_timer timer{stats.render};
+            wnd_.show();
+        }
     }
+
+    std::cout << "stats: " << stats << std::endl;
+
+    return stats;
 }
 
 void game::spawn(std::unique_ptr<game_object> new_obj)
