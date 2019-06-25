@@ -52,7 +52,6 @@ class game_object {
 
 	virtual void accept(game_object_visitor& visitor) = 0;
 
-    virtual void draw(sgfx::canvas_view) const = 0;
     virtual status update(game_proxy, std::chrono::milliseconds delta) = 0;
 
     virtual ~game_object() = default;

@@ -9,10 +9,10 @@
 #include <sgfx/key.hpp>
 #include <sgfx/primitives.hpp>
 
+#include <array>
 #include <chrono>
 #include <memory>
 #include <string>
-#include <array>
 
 class player final : public game_object, autoregister_collider {
   public:
@@ -23,10 +23,9 @@ class player final : public game_object, autoregister_collider {
 
     player(game_proxy proxy, resource_manager& rm, const std::string& name, const key_config& keys);
 
-	void accept(game_object_visitor&) override;
+    void accept(game_object_visitor&) override;
 
     game_object::status update(game_proxy proxy, std::chrono::milliseconds delta) override;
-    void draw(sgfx::canvas_view target) const override;
 
     sgfx::rectangle bounds() const override
     {
@@ -35,21 +34,29 @@ class player final : public game_object, autoregister_collider {
         return {pos_ - center_offset, {current_img.width(), current_img.height()}};
     }
 
-    void hit() override { --lifes; }
+    void hit() override { --lifes_; }
+
+    static constexpr auto key_color = sgfx::color::rgb_color{0xcb, 0x48, 0xb7};
+
+    enum class state { normal, flying_left, flying_right };
+
+    sgfx::rle_image const& img(state _state) const noexcept { return *imgs_.at(static_cast<size_t>(_state)); }
+    key_config const& keys() const noexcept { return keys_; }
+
+    state current_status() const noexcept { return current_status_; }
+    sgfx::point pos() const noexcept { return pos_; }
+    int lifes() const noexcept { return lifes_; }
+
+    bool space_released() const noexcept { return space_released_; }
 
   private:
     resource_manager& resource_manager_;
     std::array<sgfx::rle_image const*, 3> imgs_;
     key_config keys_;
-
-    enum class state { normal, flying_left, flying_right };
     state current_status_ = state::normal;
     sgfx::point pos_{0, 0};
-    int lifes = 3;
-
-    bool space_released = true;
-
-    static constexpr auto key_color = sgfx::color::rgb_color{0xcb, 0x48, 0xb7};
+    int lifes_ = 3;
+    bool space_released_ = true;
 };
 
 #endif

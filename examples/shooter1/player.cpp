@@ -35,14 +35,14 @@ game_object::status player::update(game_proxy proxy, std::chrono::milliseconds d
     if (proxy.is_pressed(keys_.down))
         ++pos_.y;
 
-    if (proxy.is_pressed(keys_.shoot) && space_released)
+    if (proxy.is_pressed(keys_.shoot) && space_released_)
     {
-        space_released = false;
+        space_released_ = false;
         proxy.spawn<bullet>(resource_manager_.rle("img/missile.rle"), pos_ - sgfx::vec{0, 50});
     }
     else if (!proxy.is_pressed(keys_.shoot))
     {
-        space_released = true;
+        space_released_ = true;
     }
 
     const auto& current_img = *imgs_[static_cast<int>(current_status_)];
@@ -53,16 +53,6 @@ game_object::status player::update(game_proxy proxy, std::chrono::milliseconds d
     pos_.y = std::clamp(pos_.y, area.top_left.y + center_offset.y,
                         area.top_left.y + area.size.h - center_offset.y);
 
-    return lifes > 0 ? game_object::status::alive : game_object::status::dead;
+    return lifes() > 0 ? game_object::status::alive : game_object::status::dead;
 }
 
-void player::draw(sgfx::canvas_view target) const
-{
-    const auto& current_img = *imgs_[static_cast<int>(current_status_)];
-    const auto center_offset = sgfx::vec{current_img.width(), current_img.height()} / 2;
-    sgfx::draw(target, current_img, pos_ - center_offset, key_color);
-
-    auto life_rect = sgfx::rectangle{{10, 10}, {10, 50}};
-    for (int i = 0; i < lifes; ++i, life_rect.top_left.x += 15)
-        sgfx::fill(target, life_rect, sgfx::color::red);
-}

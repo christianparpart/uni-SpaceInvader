@@ -42,8 +42,6 @@ class spawn_point final : public game_object {
         return game_object::status::alive;
     }
 
-    void draw(sgfx::canvas_view target) const override {}
-
   private:
     sgfx::rectangle area_;
     spawn_function_type spawn_fun_;

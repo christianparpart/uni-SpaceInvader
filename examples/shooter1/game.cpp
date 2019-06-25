@@ -1,6 +1,8 @@
 #include "game.hpp"
+#include "game_object_visitor.hpp"
 #include <memory>
 #include <utility>
+#include <algorithm>
 
 sgfx::rle_image const& resource_manager::rle(std::string const& path)
 {
@@ -43,8 +45,7 @@ void game::run()
             leftover_time -= step_time;
         }
 
-        for (const auto& obj : objs_)
-            obj->draw(wnd_);
+		std::for_each(begin(objs_), end(objs_), [&](auto& obj) { game_object_drawer::draw(wnd_, *obj); });
 
         wnd_.show();
     }

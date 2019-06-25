@@ -26,8 +26,3 @@ game_object::status asteroid::update(game_proxy proxy, std::chrono::milliseconds
     return current_status_;
 }
 
-void asteroid::draw(sgfx::canvas_view target) const
-{
-    const auto center_offset = sgfx::vec{img_.width(), img_.height()} / 2;
-    sgfx::draw(target, img_, pos_ - center_offset, key_color);
-}

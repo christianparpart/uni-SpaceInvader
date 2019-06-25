@@ -22,8 +22,3 @@ game_object::status bullet::update(game_proxy proxy, std::chrono::milliseconds d
     return game_object::status::alive;
 }
 
-void bullet::draw(sgfx::canvas_view target) const
-{
-    const auto center_offset = sgfx::vec{img_.width(), img_.height()} / 2;
-    sgfx::draw(target, img_, pos_ - center_offset, key_color);
-}
