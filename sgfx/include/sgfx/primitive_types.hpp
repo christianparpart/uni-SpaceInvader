@@ -1,6 +1,7 @@
 #ifndef SGFX_PRIMITIVE_TYPES_H
 #define SGFX_PRIMITIVE_TYPES_H
 
+#include <cmath>
 #include <cstdint>
 
 namespace sgfx {
@@ -37,6 +38,26 @@ constexpr vec operator*(int i, vec v)
 constexpr vec operator*(vec v, int i)
 {
     return v *= i;
+}
+
+constexpr int operator*(vec v, vec w) noexcept
+{
+    return v.x * w.x + v.y * w.y;
+}
+
+constexpr vec perpendicular(vec const& v) noexcept
+{
+    return vec{-v.y, v.x};
+}
+
+inline int norm(vec const& v) noexcept
+{
+    return static_cast<int>(std::sqrt(static_cast<double>(v * v)));
+}
+
+inline int project(vec const& v, vec const& w) noexcept
+{
+    return v * w / norm(w);
 }
 
 constexpr vec operator/(vec v, int i)

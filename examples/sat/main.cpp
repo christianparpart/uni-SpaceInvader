@@ -3,8 +3,22 @@
 #include <sgfx/window.hpp>
 
 #include <algorithm>
+#include <numeric>
 #include <random>
+#include <utility>
 #include <vector>
+
+template <typename Container, typename Dest, typename F>
+void transform(Container const& container, Dest dest, F f)
+{
+    std::transform(begin(container), end(container), std::move(dest), std::move(f));
+}
+
+template <typename Container, typename Init, typename F>
+auto accumulate(Container const& container, Init init, F f)
+{
+    return std::accumulate(cbegin(container), cend(container), std::move(init), std::move(f));
+}
 
 int random_uniform_int(int max)
 {
@@ -64,6 +78,45 @@ struct offset_polygon {
     sgfx::vec offset;
 };
 
+std::vector<sgfx::vec> edges(offset_polygon const& poly)
+{
+    auto result = std::vector<sgfx::vec>{};
+    for (size_t i = 0; i < poly.points.size() - 1; ++i)
+        result.emplace_back(poly.points[i + 1] - poly.points[i]);
+    result.emplace_back(poly.points.back() - poly.points.front());
+    return result;
+}
+
+std::vector<sgfx::vec> axes(offset_polygon const& poly)
+{
+    auto axes = std::vector<sgfx::vec>{};
+    transform(edges(poly), back_inserter(axes), [](auto& edge) { return perpendicular(edge); });
+    return axes;
+}
+
+sgfx::vec project(offset_polygon const& poly, sgfx::vec const& axis)
+{
+    auto const edges = ::edges(poly);
+
+    // auto minimum = edges[0] * axis;
+    // auto maximum = minimum;
+    // for (size_t i = 1; i < edges.size(); ++i)
+    //{
+    //	auto p = axis * edges[i];
+    //	minimum = std::min(minimum, p);
+    //	maximum = std::max(maximum, p);
+    //}
+    // return {minimum, maximum};
+
+    auto const minimum =
+        accumulate(edges, edges[0] * axis, [&](auto a, auto e) { return std::min(a, e * axis); });
+
+    auto const maximum =
+        accumulate(edges, edges[0] * axis, [&](auto a, auto e) { return std::max(a, e * axis); });
+
+    return {minimum, maximum};
+}
+
 void draw_outline(sgfx::canvas_view target, const offset_polygon& poly, sgfx::color::rgb_color col)
 {
     for (std::size_t i = 0; i < poly.points.size() - 1; ++i)
@@ -71,8 +124,30 @@ void draw_outline(sgfx::canvas_view target, const offset_polygon& poly, sgfx::co
     sgfx::line(target, poly.points.front() + poly.offset, poly.points.back() + poly.offset, col);
 }
 
+constexpr bool overlap(sgfx::vec v, sgfx::vec w)
+{
+    return false; // TODO return (w - v) < 0;
+}
+
 bool sat_collide(const offset_polygon& poly0, const offset_polygon& poly1)
 {
+    using namespace std;
+    using sgfx::vec;
+
+    auto const axes0 = axes(poly0);
+    auto const axes1 = axes(poly1);
+
+    for (auto const axes : {axes0, axes1})
+    {
+        for (auto const axis : axes)
+        {
+			auto const p1 = project(poly0, axis);
+			auto const p2 = project(poly1, axis);
+			if (overlap(p1, p2))
+				return true;
+		}
+    }
+
     return false;
 }
 
