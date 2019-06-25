@@ -17,8 +17,6 @@ class bullet final : public game_object, autoregister_collider {
 
     void accept(game_object_visitor&) override;
 
-    game_object::status update(game_proxy proxy, std::chrono::milliseconds delta) override;
-
     sgfx::rectangle bounds() const override
     {
         return {pos_ - sgfx::vec{img_.width() / 2, img_.height() / 2}, {img_.width(), img_.height()}};
@@ -30,6 +28,10 @@ class bullet final : public game_object, autoregister_collider {
     sgfx::point pos() const noexcept { return pos_; }
     sgfx::vec vel() const noexcept { return vel_; }
     std::chrono::milliseconds remaining_lifetime() const noexcept { return remaining_lifetime_; }
+
+	// modifier
+    sgfx::point& pos() noexcept { return pos_; }
+    std::chrono::milliseconds& remaining_lifetime() noexcept { return remaining_lifetime_; }
 
     static constexpr auto key_color = sgfx::color::rgb_color{0xcb, 0x48, 0xb7};
 

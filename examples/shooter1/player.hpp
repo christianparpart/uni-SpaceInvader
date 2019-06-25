@@ -25,8 +25,6 @@ class player final : public game_object, autoregister_collider {
 
     void accept(game_object_visitor&) override;
 
-    game_object::status update(game_proxy proxy, std::chrono::milliseconds delta) override;
-
     sgfx::rectangle bounds() const override
     {
         auto const& current_img = *imgs_[static_cast<int>(current_status_)];
@@ -40,17 +38,24 @@ class player final : public game_object, autoregister_collider {
 
     enum class state { normal, flying_left, flying_right };
 
+    resource_manager& resource_manager() const noexcept { return resource_manager_; }
+
     sgfx::rle_image const& img(state _state) const noexcept { return *imgs_.at(static_cast<size_t>(_state)); }
     key_config const& keys() const noexcept { return keys_; }
 
     state current_status() const noexcept { return current_status_; }
     sgfx::point pos() const noexcept { return pos_; }
     int lifes() const noexcept { return lifes_; }
-
     bool space_released() const noexcept { return space_released_; }
 
+	// modifier
+    state& current_status() noexcept { return current_status_; }
+    sgfx::point& pos() noexcept { return pos_; }
+    int& lifes() noexcept { return lifes_; }
+    bool& space_released() noexcept { return space_released_; }
+
   private:
-    resource_manager& resource_manager_;
+    ::resource_manager& resource_manager_;
     std::array<sgfx::rle_image const*, 3> imgs_;
     key_config keys_;
     state current_status_ = state::normal;

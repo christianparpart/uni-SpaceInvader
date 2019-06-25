@@ -25,27 +25,23 @@ class spawn_point final : public game_object {
     {
     }
 
-	void accept(game_object_visitor& visitor) { return visitor.visit(*this); }
+    void accept(game_object_visitor& visitor) { return visitor.visit(*this); }
 
-    game_object::status update(game_proxy proxy, std::chrono::milliseconds delta) override
-    {
-        while (time_remaining_ <= delta)
-        {
-            auto const pos = sgfx::point{area_.top_left.x + random_uniform_int(area_.size.w),
-                                         area_.top_left.y + random_uniform_int(area_.size.h)};
-            spawn_fun_(proxy, pos);
-            delta -= time_remaining_;
-            time_remaining_ = delay_;
-        }
-        time_remaining_ -= delta;
+    void operator()(game_proxy proxy, sgfx::point pos) const { spawn_fun_(proxy, pos); }
 
-        return game_object::status::alive;
-    }
+    sgfx::rectangle area() const noexcept { return area_; }
+    spawn_function_type spawn_fun() const noexcept { return spawn_fun_; }
+    std::chrono::milliseconds delay() const noexcept { return delay_; }
+    std::chrono::milliseconds time_remaining() const noexcept { return time_remaining_; }
+
+	// modifiers
+    std::chrono::milliseconds& time_remaining() noexcept { return time_remaining_; }
 
   private:
     sgfx::rectangle area_;
     spawn_function_type spawn_fun_;
-    std::chrono::milliseconds delay_, time_remaining_;
+    std::chrono::milliseconds delay_;
+    std::chrono::milliseconds time_remaining_;
 };
 
 auto inline make_spawn_point(sgfx::rectangle area, spawn_function_type spawn_fun,

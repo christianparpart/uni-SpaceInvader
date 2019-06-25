@@ -17,15 +17,11 @@ class scrolling_bg final : public game_object {
 
     void accept(game_object_visitor& visitor) { visitor.visit(*this); }
 
-    game_object::status update(game_proxy proxy, std::chrono::milliseconds delta) override
-    {
-        pos_.y = (pos_.y + scroll_speed_) % img_.height();
-
-        return game_object::status::alive;
-    }
-
     sgfx::rle_image const& img() const noexcept { return img_; }
     sgfx::point pos() const noexcept { return pos_; }
+    int scroll_speed() const noexcept { return scroll_speed_; }
+
+    sgfx::point& pos() noexcept { return pos_; }
 
   private:
     sgfx::rle_image const& img_;

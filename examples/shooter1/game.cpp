@@ -33,7 +33,8 @@ void game::run()
 
             for (std::size_t i = 0; i < objs_.size(); ++i)
             {
-                auto const obj_state = objs_[i]->update(game_proxy{this}, step_time);
+                auto const obj_state = game_object_updater::update(game_proxy{this}, step_time, *objs_[i]);
+
                 if (obj_state == game_object::status::dead)
                 {
                     std::swap(objs_[i], objs_.back());
