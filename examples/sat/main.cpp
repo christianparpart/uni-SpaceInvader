@@ -126,14 +126,13 @@ void draw_outline(sgfx::canvas_view target, const offset_polygon& poly, sgfx::co
 
 constexpr bool overlap(sgfx::vec v, sgfx::vec w)
 {
-    return false; // TODO return (w - v) < 0;
+    auto d = sgfx::vec{w.x - v.x, w.y - v.y};
+    return d * d != 0;
+    //return false; // TODO return (w - v) < 0;
 }
 
 bool sat_collide(const offset_polygon& poly0, const offset_polygon& poly1)
 {
-    using namespace std;
-    using sgfx::vec;
-
     auto const axes0 = axes(poly0);
     auto const axes1 = axes(poly1);
 
@@ -143,12 +142,12 @@ bool sat_collide(const offset_polygon& poly0, const offset_polygon& poly1)
         {
 			auto const p1 = project(poly0, axis);
 			auto const p2 = project(poly1, axis);
-			if (overlap(p1, p2))
-				return true;
+			if (!overlap(p1, p2))
+				return false;
 		}
     }
 
-    return false;
+    return true;
 }
 
 int main(int argc, char* argv[])

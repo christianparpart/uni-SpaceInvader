@@ -67,7 +67,7 @@ void game_object_updater::visit(player& obj)
     if (proxy_.is_pressed(obj.keys().shoot) && obj.space_released())
     {
         obj.space_released() = false;
-        proxy_.spawn<bullet>(obj.resource_manager().rle("img/missile.rle"), obj.pos() - sgfx::vec{0, 50});
+        proxy_.spawn<bullet>(obj.get_resource_manager().rle("img/missile.rle"), obj.pos() - sgfx::vec{0, 50});
     }
     else if (!proxy_.is_pressed(obj.keys().shoot))
     {

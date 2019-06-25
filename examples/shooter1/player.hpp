@@ -38,7 +38,7 @@ class player final : public game_object, autoregister_collider {
 
     enum class state { normal, flying_left, flying_right };
 
-    resource_manager& resource_manager() const noexcept { return resource_manager_; }
+    resource_manager& get_resource_manager() const noexcept { return resource_manager_; }
 
     sgfx::rle_image const& img(state _state) const noexcept { return *imgs_.at(static_cast<size_t>(_state)); }
     key_config const& keys() const noexcept { return keys_; }
